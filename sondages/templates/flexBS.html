@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8"/>
+    <title>
+      {% block title %}{{title}}{% endblock %}
+    </title>
+{% block styles %}
+
+<link rel="stylesheet" href="static/css/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href="static/css/bootstrap/css/bootstrap-theme.css">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/flex.css')}}"/>
+{% endblock %}
+{% block js %}
+    <script src="{{
+      url_for('static', filename='js/jquery.min.js')
+    }}">
+    </script>
+{% endblock %}
+  </head>
+  <body>
+ <header>
+ <h1>Administration des sondages</h1>
+ <input type="hidden" id="val_currentSondage" ><span id="text_currentSondage"></span>
+
+{% if current_user.is_authenticated %}
+<div id="loginInf">
+<span class="glyphicon glyphicon-user" aria-hidden="true"></span><a>{{ current_user.username }}</a>
+<br>
+<a href="{{ url_for('logout') }}" >
+<span class="glyphicon glyphicon-log-out" aria-hidden="true">
+</span>Se deconnecter</a>
+
+{%else %}
+ <form class="form-horizontal" id="loginForm" role="form"
+       method="POST" action="{{ url_for('login') }}">
+{{ form.hidden_tag() }}
+<div class="form-group">
+		{{ form.username(size=20,class_="form-control",placeholder="Nom d'utilisateur") }}
+</div>
+<div class="form-group">
+		{{ form.password(size=20,class_="form-control",placeholder="Mot de passe") }}
+</div>
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<button type="submit" class="btn btn-default btn-sm">Log in</button>
+		<a href="{{ url_for('signin')}}"
+       class="btn btn-default btn-sm">
+       <span class="glyphicon glyphicon-user" aria-hidden="true">
+       </span> Inscription
+    </a>
+	</div>
+</div>
+{%endif%}
+</form>
+
+ </header>
+
+ <div id='main'>
+
+    <nav id="nav1">
+      <h2>Questions</h2>
+        {% block questions %}
+        {% endblock %}
+    </nav>
+
+    <article>
+      <h2>Editeur de questions</h2>
+      <span id="question">
+        <span id="add" class="glyphicon glyphicon-plus icones" aria-hidden="true"></span>
+        <span id="delete" class=" glyphicon glyphicon-remove icones" aria-hidden="true"></span>
+      </span>
+      {% block editor %}{%endblock %}
+    </article>
+
+    <nav id="nav2">
+      <h2>Sondages</h2>
+      <span id="sondage">
+		  {% if current_user.is_authenticated %}
+		<span id="add2" class="glyphicon glyphicon-plus icones" aria-hidden="true"></span>
+		{%endif%}
+      </span>
+      {% block surveys %} {% endblock %}
+    </nav>
+
+ </div>
+ <footer>
+ <h4>©Département Informatique ⚛ IUT d'Orléans</h4>
+ </footer>
+
+  </body>
+</html>

@@ -1,0 +1,7 @@
+body {
+   font: 24px Menlo, Helvetica;
+   background:url(img/fond.jpg);
+   background-size:cover;
+   margin-top:25%;
+   color:white;
+  }

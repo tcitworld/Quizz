@@ -1,0 +1,149 @@
+{% extends "flexBS.html" %}
+{% block js %}
+{{ super() }}
+<script>
+//Gestion des click
+$().ready(function(){
+  $("#sondageRefresh").on("click", refreshSondagesList);
+	$("#question #add").on("click",newQuestion);
+	$("#question #delete").on("click", delQuestion);
+	$("#sondage #add2").on("click", newSondage);
+	showCurrentSondage();
+	$("#add").hide();
+	$("#delete").hide();
+	$("#text_currentSondage").empty();
+});
+
+//===============================================================Sondages======================================================================
+
+function Sondage(name){
+	this.name = name;
+}
+
+//Changement de sondage courant
+//Lors d'un click sur un sondage on change le sondage courant
+// et on affiche les questions correspondantes
+function switchSond(event){
+
+}
+
+//Affichage du nom du sondage courant en haut de page
+function showCurrentSondage(name){
+
+}
+
+//Formulaire de creation d'un sondage
+function newSondage(){
+
+}
+
+
+//Fonction pour sauvegarder le sondage
+//Crée un sondage
+function saveNewSondage(){
+
+	refreshSondagesList();
+}
+
+//Fonction pour supprimer un sondage
+function delSondage(event){
+  console.log("deleteSondage");
+  console.log(event.data['url']);
+  // à compléter
+}
+
+//On recupere et affiche les sondages
+function refreshSondagesList(event){
+ // à compléter
+}
+
+//====================Questions============================
+
+function SimpleQuestion(title, first, second, sond_id){
+	this.title = title;
+	this.firstAlternative = first;
+	this.secondAlternative = second;
+	this.sondage_id = sond_id;
+}
+/* Rafraichir la liste des questions du sondage selectionné */
+function refreshQuestionsList(event){
+  // à compléter
+}
+//Affiche le formulaire pour une nouvelle question
+function newQuestion(){
+	console.log("New question");
+	current = $("#currentquestion");
+	current.empty();
+  // à compléter
+}
+
+//Fonction de validation pour l'ajout d'une nouvelle question
+function saveNewQuestion(){
+	// à compléter
+}
+
+//Lorsqu'on clique sur une question,
+// présente le formulaire d'edition
+// avec les données courantes de la question
+function formQuestion(event){
+	// à compléter
+}
+
+//Fonction ajax pour editer une question
+function saveEditQuestion(event){
+	var question = new SimpleQuestion(
+		$("#currentquestion #titre").val(),
+		$("#currentquestion #firstA").val(),
+		$("#currentquestion #secondA").val(),
+		$("#val_currentSondage").val()
+	);
+	$.ajax({
+		url: $("#currentquestion #url").val(),
+		type: "PUT",
+		contentType: "application/json",
+		data: JSON.stringify(question),
+		dataType: "json",
+		success:function (msg){
+			console.log('success update');
+			$("#currentquestion").empty();
+			$("#delete").hide();
+			$("#add").hide();
+			refreshQuestionsList();
+		},
+		error:function (err){
+			console.log('Update error');
+		},
+	});
+	}
+
+//Suppression Question
+function delQuestion(){
+  // à compléter
+}
+</script>
+{% endblock %}
+
+{% block questions %}
+
+  <div id="questions">
+
+  </div>
+
+{% endblock %}
+
+ {% block editor %}
+  <div id="currentquestion">
+
+  </div>
+
+ {%endblock %}
+{% block surveys %}
+  <span id="sondageRefresh"
+          class="glyphicon glyphicon-refresh icones"
+          aria-hidden="true">
+  </span>
+  <div id="sondages">
+
+  </div>
+
+{% endblock %}

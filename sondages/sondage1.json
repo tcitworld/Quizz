@@ -1,0 +1,30 @@
+{
+    "id": 1,
+    "name": "Sondage express vacances",
+    "questions": 
+    [
+        {
+            "title": "Activité programmation:",
+            "firstAlternative":  "Vous faites du Java",
+            "secondAlternative": "Vous préférez Python"
+        },
+
+        {
+            "title": "Activité Montagne:",
+            "firstAlternative":  "Vous allez à la montagne",
+            "secondAlternative": "Vous préférez la plaine"   
+        },
+
+        {
+            "title": "Vous allez dormir toute la journée:",
+            "firstAlternative":  "Oui",
+            "secondAlternative": "Non"     
+        },
+
+        {
+            "title": "Vous ferez du sport:",
+            "firstAlternative":  "Très certainement",
+            "secondAlternative": "Surtout pas"    
+        }
+    ]
+}

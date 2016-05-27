@@ -1,0 +1,279 @@
+{% extends "flexBS.html" %}
+{% block js %}
+{{ super() }}
+<script>
+//Gestion des click
+$().ready(function(){
+  $("#sondageRefresh").on("click", refreshSondagesList);
+	$("#question #add").on("click",newQuestion);
+	$("#question #delete").on("click", delQuestion);
+	$("#sondage #add2").on("click", newSondage);
+	showCurrentSondage();
+	$("#add").hide();
+	$("#delete").hide();
+	$("#text_currentSondage").empty();
+});
+
+//===============================================================Sondages======================================================================
+
+function Sondage(name){
+	this.name = name;
+}
+
+//Changement de sondage courant
+//Lors d'un click sur un sondage on change le sondage courant
+// et on affiche les questions correspondantes
+function switchSond(event){
+	$("#delete").hide();
+	$("#add").show();
+	$("#currentquestion").empty();
+	$("#questions").empty();
+	console.log(event);
+	$("#val_currentSondage").val(event.data['id']);
+	refreshQuestionsList();
+	showCurrentSondage(event.data['name']);
+}
+
+//Affichage du nom du sondage courant en haut de page
+function showCurrentSondage(name){
+	$("#text_currentSondage").empty();
+  if ($("#val_currentSondage").val())
+	    $("#text_currentSondage").text("Sondage courant : " + name);
+}
+
+//Formulaire de creation d'un sondage
+function newSondage(){
+	$("#newSond").remove();
+	$("#sondages").append($("<span id='newSond'></span>")
+					.append($("<input type='text' id='nameNewSond' placeholder='Nom du sondage'>"))
+					.append($("<input type='button' class='btn btn-default' value='Ajouter' id='saveSond'>")
+          .on("click",saveNewSondage)));
+}
+
+
+//Fonction pour sauvegarder le sondage crée un sondage
+function saveNewSondage(){
+	var sond = new Sondage($("#sondages #newSond #nameNewSond").val());
+	console.log("Creation of new sondage object\n"+JSON.stringify(sond));
+	$.ajax({
+		url : "http://localhost:5000/api/sondages",
+		type: "POST",
+		contentType: "application/json",
+		data: JSON.stringify(sond),
+		datatype: "json"
+	});
+	$("#newSond").remove();
+	refreshSondagesList();
+}
+
+//Fonction pour supprimer un sondage
+function delSondage(event){
+  console.log("deleteSondage");
+  console.log(event.data['url']);
+  $.ajax({
+    url: event.data.url,
+    type: "DELETE",
+    datatype: "json",
+    success:function(){
+      console.log("Successfully deleted sondage");
+      $("#val_currentSondage").val("");
+      showCurrentSondage("");
+      $("#add").hide();
+      refreshSondagesList();
+    },
+    error:function(){
+      console.log("Error deleting sondage");
+    }
+  });
+}
+
+//On recupere et affiche les sondages
+function refreshSondagesList(event){
+  $.ajax({
+    url : "http://localhost:5000/api/sondages",
+    type : "GET",
+    datatype: "json",
+    success: function(data){
+      $("#sondages").empty();
+      $("#sondages").append($("<ul>"));
+      for(var i=0; i<data.sondages.length; i++){
+        console.log(data.sondages[i]);
+        $("#sondages ul").append($("<li>")
+        .append($("<span>")
+        .append($("<a>").text(data.sondages[i].name))
+        .on("click", data.sondages[i], switchSond))
+        .append($("<span id='delete' class='glyphicon glyphicon-remove icones' style='margin-left:5px;' aria-hidden='true'></span>")
+        .on("click", data.sondages[i], delSondage)));
+      }
+    },
+    error: function(req, status, err){
+      $("#sondages").html("<b>Impossible de récuperer les sondages, Vérifiez votre connexion</b>");
+    }
+  });
+}
+
+//==================================================================Questions===================================================================
+
+function SimpleQuestion(title, first, second, sond_id){
+	this.title = title;
+	this.firstAlternative = first;
+	this.secondAlternative = second;
+	this.sondage_id = sond_id;
+}
+
+function refreshQuestionsList(event){
+  $.ajax({
+    url : "http://localhost:5000/api/sondages/"+$("#val_currentSondage").val()+"/questions",
+    type : "GET",
+    datatype: "json",
+    success: function(data){
+      $("#questions").empty();
+      $("#questions").append($("<ul>"));
+      for(var i=0; i<data.questions.length; i++){
+        console.log(data.questions[i]);
+        $("#questions ul").append($("<li>")
+        .append($("<a>")
+        .text(data.questions[i].title))
+        .on("click", data.questions[i], formQuestion));
+      }
+    },
+    error: function(req, status, err){
+      $("#questions").html("<b>Impossible de recuperer les questions</b>");
+    }
+  });
+}
+//Affiche le formulaire pour une nouvelle question
+function newQuestion(){
+	console.log("New question");
+	current = $("#currentquestion");
+	current.empty();
+	current.append($("<span>Question <br><input type='text' id='titre'><br></span>"))
+			.append($("<span>Première Alternative <br><input type='text' id='firstA'><br></span>"))
+			.append($("<span>Seconde Alternative <br><input type='text' id='secondA'><br></span>"))
+			.append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveQuestion'><br></span>")
+      .on("click",saveNewQuestion));
+}
+
+//Fonction de validation pour l'ajout d'une nouvelle question
+function saveNewQuestion(){
+	var question = new SimpleQuestion(
+			$("#currentquestion #titre").val(),
+			$("#currentquestion #firstA").val(),
+			$("#currentquestion #secondA").val(),
+			$("#val_currentSondage").val()
+	);
+	console.log("Creation of new question object\n"+JSON.stringify(question));
+	$.ajax({
+        url : "http://localhost:5000/api/questions",
+        type : "POST",
+        contentType : "application/json",
+        data: JSON.stringify(question),
+        datatype: "json",
+    });
+    $("#currentquestion").empty();
+    $("#delete").hide();
+    $("#add").hide();
+	refreshQuestionsList();
+}
+
+//Lorsqu'on clique sur une question,
+// présente le formulaire d'edition
+// avec les données courantes de la question
+function formQuestion(event){
+	$("#delete").show();
+	$("#add").show();
+	current = $("#currentquestion");
+	console.log(event.data);
+	var title = event.data['title'];
+	console.log(event.data['firstAlternative']);
+	var first = event.data['firstAlternative'];
+	console.log(event.data['secondAlternative']);
+	var second = event.data['secondAlternative'];
+	var url = event.data['url'];
+	current.empty();
+	current.append($("<span>Texte de la Question :<br> <input type='text' value='' id='titre'><br></span>"))
+	.append($("<span>Première alternative : <br><input type='text' value='' id='firstA'><br></span>"))
+			.append($("<span>Seconde alternative : <br><input type='text' value='' id='secondA'><br></span>"))
+			.append($("<span><input type='hidden' value='' id='url' /><br></span>"));
+	$("#titre").val(title);
+	$("#firstA").val(first);
+	$("#secondA").val(second);
+	$("#url").val(url);
+	current.append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveEditQuestion'><br></span>")
+         .on("click",saveEditQuestion));
+}
+
+//Fonction ajax pour editer une question
+function saveEditQuestion(event){
+	var question = new SimpleQuestion(
+		$("#currentquestion #titre").val(),
+		$("#currentquestion #firstA").val(),
+		$("#currentquestion #secondA").val(),
+		$("#val_currentSondage").val()
+	);
+	$.ajax({
+		url: $("#currentquestion #url").val(),
+		type: "PUT",
+		contentType: "application/json",
+		data: JSON.stringify(question),
+		dataType: "json",
+		success:function (msg){
+			console.log('success update');
+			$("#currentquestion").empty();
+			$("#delete").hide();
+			$("#add").hide();
+			refreshQuestionsList();
+		},
+		error:function (err){
+			console.log('update error');
+		},
+	});
+	}
+
+//Suppression question
+function delQuestion(){
+  if($("#currentquestion #url").val()){
+    $.ajax({
+      url: $("#currentquestion #url").val(),
+      type: 'DELETE',
+      datatype: 'json',
+      success: function (msg){
+        console.log('Delete Success');
+        $("#delete").hide();
+        $("#add").hide();
+        $("#currentquestion").empty();
+        refreshQuestionsList();
+      },
+      error: function (err){
+        console.log('Delete Error');
+      }
+    });
+  }
+}
+</script>
+{% endblock %}
+
+{% block questions %}
+
+  <div id="questions">
+
+  </div>
+
+{% endblock %}
+
+ {% block editor %}
+  <div id="currentquestion">
+
+  </div>
+
+ {%endblock %}
+{% block surveys %}
+  <span id="sondageRefresh"
+          class="glyphicon glyphicon-refresh icones"
+          aria-hidden="true">
+  </span>
+  <div id="sondages">
+
+  </div>
+
+{% endblock %}
