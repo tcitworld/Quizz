@@ -142,16 +142,51 @@ function refreshQuestionsList(event){
     }
   });
 }
+
+var nbReponses = 0;
+
 //Affiche le formulaire pour une nouvelle question
 function newQuestion(){
 	console.log("New question");
-	current = $("#currentquestion");
+	current = $("#questions_form");
 	current.empty();
-	current.append($("<span>Question <br><input type='text' id='titre'><br></span>"))
-			.append($("<span>Première Alternative <br><input type='text' id='firstA'><br></span>"))
-			.append($("<span>Seconde Alternative <br><input type='text' id='secondA'><br></span>"))
-			.append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveQuestion'><br></span>")
-      .on("click",saveNewQuestion));
+  nbReponses++;
+	current.append($("<span>Question <br><textarea type='text' id='titre'></textarea><br></span>"))
+			.append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "<br><input type='text' id='firstA'><br></span>"));
+  nbReponses++,
+	current.append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "<br><input type='text' id='secondA'><br></span>"));
+  buttons = $("#questions_actions");
+  buttons.append($("<select name='reponse'><option value='1'>Réponse 1</option><option value='2'>Réponse 2</option></select><br>"))
+      .append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveQuestion'><br></span>")
+      .on("click",saveNewQuestion))
+      .append($("<span><input type='button' class='btn btn-default' value='Ajouter une réponse' id='addQuestion'><br></span>")
+      .on("click", addNewAnswer));
+}
+
+function addNewAnswer() {
+  if (nbReponses < 4) {
+    nbReponses++;
+    $("#questions_form").append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "</span>")
+      .append($("<br><input type='text' id='secondA'>"))
+      .append($("<button class='glyphicon glyphicon-remove icones' data-id='" + nbReponses + "' aria-hidden='true'></button><br>")
+      .on("click", deleteAnswer))
+      );
+    $("#questions_actions select[name='reponse']").append($('<option data-id="' + nbReponses + '" value="' + nbReponses + '">Réponse ' + nbReponses + '</option>'));
+    $("article").scrollTop($("article")[0].scrollHeight);
+  }
+  if (nbReponses == 4) {
+    $("#addQuestion").hide();
+  }
+}
+
+function deleteAnswer() {
+  nbReponses--;
+  var answerID = $(this).attr('data-id');
+  $("#questions_form span[data-id='" + answerID + "']").remove();
+  $("#questions_actions option[data-id='" + answerID + "']").remove();
+  if (nbReponses < 4) {
+    $("#addQuestion").show();
+  }
 }
 
 //Fonction de validation pour l'ajout d'une nouvelle question
@@ -262,9 +297,10 @@ function delQuestion(){
 {% endblock %}
 
  {% block editor %}
-  <div id="currentquestion">
-
-  </div>
+<div id="questions_form">
+</div>
+<div id="questions_actions">
+</div>
 
  {%endblock %}
 {% block surveys %}

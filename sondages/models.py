@@ -67,6 +67,9 @@ class Question(db.Model):
 class SimpleQuestion(Question):
     firstAlternative = db.Column(db.String(120))
     secondAlternative = db.Column(db.String(120))
+    thirdAlternative = db.Column(db.String(120))
+    fourthAlternative = db.Column(db.String(120))
+    answer = db.Column(db.Integer)
     firstChecked = db.Column(db.Boolean)
 
     def to_json(self):
