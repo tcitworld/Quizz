@@ -211,7 +211,7 @@ function saveNewQuestion(){
         data: JSON.stringify(question),
         datatype: "json",
     });
-    $("#currentquestion").empty();
+    $("#questions_form").empty();
     $("#delete").hide();
     $("#add").hide();
 	refreshQuestionsList();
@@ -223,25 +223,43 @@ function saveNewQuestion(){
 function formQuestion(event){
 	$("#delete").show();
 	$("#add").show();
-	current = $("#currentquestion");
+	current = $("#questions_form");
+  buttons = $("#questions_actions");
+  buttons.append($("<select name='reponse'><option value='1'>Réponse 1</option><option value='2'>Réponse 2</option></select><br>"))
 	console.log(event.data);
 	var title = event.data['title'];
 	console.log(event.data['firstAlternative']);
 	var first = event.data['firstAlternative'];
 	console.log(event.data['secondAlternative']);
 	var second = event.data['secondAlternative'];
+  var third = event.data['thirdAlternative'];
+  var fourth = event.data['fourthAlternative'];
 	var url = event.data['url'];
 	current.empty();
 	current.append($("<span>Texte de la Question :<br> <input type='text' value='' id='titre'><br></span>"))
 	.append($("<span>Première alternative : <br><input type='text' value='' id='firstA'><br></span>"))
 			.append($("<span>Seconde alternative : <br><input type='text' value='' id='secondA'><br></span>"))
-			.append($("<span><input type='hidden' value='' id='url' /><br></span>"));
+  if (third){
+    current.append("<span>Troisième alternative : <br><input type='text' value='' id='thirdA'><br></span>")
+    $("thirdA").val(third);
+  }
+  if (fourth){
+    current.append("<span>Quatrième alternative : <br><input type='text' value='' id='fourhtA'><br></span>")
+    $("fourthA").val(fourth);
+  } else {
+
+  }
+  
+	current.append($("<span><input type='hidden' value='' id='url' /><br></span>"));
 	$("#titre").val(title);
 	$("#firstA").val(first);
 	$("#secondA").val(second);
 	$("#url").val(url);
-	current.append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveEditQuestion'><br></span>")
-         .on("click",saveEditQuestion));
+ 
+      .append($("<span><input type='button' class='btn btn-default' value='Ajouter une réponse' id='addQuestion'><br></span>")
+      .on("click", addNewAnswer))
+      .append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveQuestion'><br></span>")
+      .on("click",saveNewQuestion));
 }
 
 //Fonction ajax pour editer une question
@@ -256,14 +274,14 @@ function saveEditQuestion(event){
       $("#val_currentSondage").val()
 	);
 	$.ajax({
-		url: $("#currentquestion #url").val(),
+		url: $("#questions_form #url").val(),
 		type: "PUT",
 		contentType: "application/json",
 		data: JSON.stringify(question),
 		dataType: "json",
 		success:function (msg){
 			console.log('success update');
-			$("#currentquestion").empty();
+			$("#questions_form").empty();
 			$("#delete").hide();
 			$("#add").hide();
 			refreshQuestionsList();
@@ -276,16 +294,16 @@ function saveEditQuestion(event){
 
 //Suppression question
 function delQuestion(){
-  if($("#currentquestion #url").val()){
+  if($("#questions_form #url").val()){
     $.ajax({
-      url: $("#currentquestion #url").val(),
+      url: $("#questions_form #url").val(),
       type: 'DELETE',
       datatype: 'json',
       success: function (msg){
         console.log('Delete Success');
         $("#delete").hide();
         $("#add").hide();
-        $("#currentquestion").empty();
+        $("#questions_form").empty();
         refreshQuestionsList();
       },
       error: function (err){
