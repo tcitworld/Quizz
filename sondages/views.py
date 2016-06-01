@@ -77,10 +77,14 @@ def create_question():
 		title = request.json['title'],
 		firstAlternative = request.json.get('firstAlternative', ""),
 		secondAlternative = request.json.get('secondAlternative', ""),
+		thirdAlternative = request.json.get('thirdAlternative', ""),
+		fourthAlternative = request.json.get('fourthAlternative', ""),
+		answer = request.json.get('answer', 0),
 		sondage_id = request.json['sondage_id']
-    )
+	)
 	db.session.add(question)
 	db.session.commit()
+	print(question.to_json())
 	return jsonify(question.to_json()), 201
 
 #~ route pour editer une question
@@ -91,6 +95,9 @@ def edit_question(id):
     question.title = request.json.get('title',"")
     question.firstAlternative = request.json.get('firstAlternative',"")
     question.secondAlternative = request.json.get('secondAlternative',"")
+    question.thirdAlternative = request.json.get('thirdAlternative', ""),
+    question.fourthAlternative = request.json.get('fourthAlternative', ""),
+    question.answer = request.json.get('answer', 0),
     db.session.commit()
     return jsonify(question.to_json())
 

@@ -114,10 +114,13 @@ function refreshSondagesList(event){
 
 //==================================================================Questions===================================================================
 
-function SimpleQuestion(title, first, second, sond_id){
+function SimpleQuestion(title, first, second, third, fourth, answer, sond_id){
 	this.title = title;
 	this.firstAlternative = first;
 	this.secondAlternative = second;
+  this.thirdAlternative = third;
+  this.fourthAlternative = fourth;
+  this.answer = answer;
 	this.sondage_id = sond_id;
 }
 
@@ -152,22 +155,22 @@ function newQuestion(){
 	current.empty();
   nbReponses++;
 	current.append($("<span>Question <br><textarea type='text' id='titre'></textarea><br></span>"))
-			.append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "<br><input type='text' id='firstA'><br></span>"));
+			.append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "<br><input type='text' class='repInput'><br></span>"));
   nbReponses++,
-	current.append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "<br><input type='text' id='secondA'><br></span>"));
+	current.append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "<br><input type='text' class='repInput'><br></span>"));
   buttons = $("#questions_actions");
   buttons.append($("<select name='reponse'><option value='1'>Réponse 1</option><option value='2'>Réponse 2</option></select><br>"))
-      .append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveQuestion'><br></span>")
-      .on("click",saveNewQuestion))
       .append($("<span><input type='button' class='btn btn-default' value='Ajouter une réponse' id='addQuestion'><br></span>")
-      .on("click", addNewAnswer));
+      .on("click", addNewAnswer))
+      .append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveQuestion'><br></span>")
+      .on("click",saveNewQuestion));
 }
 
 function addNewAnswer() {
   if (nbReponses < 4) {
     nbReponses++;
     $("#questions_form").append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "</span>")
-      .append($("<br><input type='text' id='secondA'>"))
+      .append($("<br><input type='text' class='repInput'>"))
       .append($("<button class='glyphicon glyphicon-remove icones' data-id='" + nbReponses + "' aria-hidden='true'></button><br>")
       .on("click", deleteAnswer))
       );
@@ -180,7 +183,6 @@ function addNewAnswer() {
 }
 
 function deleteAnswer() {
-  nbReponses--;
   var answerID = $(this).attr('data-id');
   $("#questions_form span[data-id='" + answerID + "']").remove();
   $("#questions_actions option[data-id='" + answerID + "']").remove();
@@ -191,10 +193,14 @@ function deleteAnswer() {
 
 //Fonction de validation pour l'ajout d'une nouvelle question
 function saveNewQuestion(){
+  console.log($("#val_currentSondage").val());
 	var question = new SimpleQuestion(
-			$("#currentquestion #titre").val(),
-			$("#currentquestion #firstA").val(),
-			$("#currentquestion #secondA").val(),
+			$("#questions_form textarea").val(),
+			$("#questions_form .repInput").eq(0).val(),
+			$("#questions_form .repInput").eq(1).val(),
+      $("#questions_form .repInput").eq(2).val(),
+      $("#questions_form .repInput").eq(3).val(),
+      $("#questions_actions select").val(),
 			$("#val_currentSondage").val()
 	);
 	console.log("Creation of new question object\n"+JSON.stringify(question));
@@ -241,10 +247,13 @@ function formQuestion(event){
 //Fonction ajax pour editer une question
 function saveEditQuestion(event){
 	var question = new SimpleQuestion(
-		$("#currentquestion #titre").val(),
-		$("#currentquestion #firstA").val(),
-		$("#currentquestion #secondA").val(),
-		$("#val_currentSondage").val()
+		$("#questions_form textarea").val(),
+      $("#questions_form .repInput").eq(0).val(),
+      $("#questions_form .repInput").eq(1).val(),
+      $("#questions_form .repInput").eq(2).val(),
+      $("#questions_form .repInput").eq(3).val(),
+      $("#questions_actions select").val(),
+      $("#val_currentSondage").val()
 	);
 	$.ajax({
 		url: $("#currentquestion #url").val(),

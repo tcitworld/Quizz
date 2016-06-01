@@ -17,6 +17,10 @@
       url_for('static', filename='js/jquery.min.js')
     }}">
     </script>
+    <script async src="{{
+      url_for('static', filename='js/main.full.js')
+    }}">
+    </script>
 {% endblock %}
   </head>
   <body>
@@ -87,6 +91,8 @@
  </div>
  <footer>
  <h4>©Département Informatique ⚛ IUT d'Orléans</h4>
+ <div id="exemple">
+ </div>
  </footer>
 
   </body>
