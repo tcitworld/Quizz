@@ -36,20 +36,20 @@ def home():
 		"sondages.html",
 		title="Questions",form=f)
 
-#Recupérer les sondages
-@app.route('/api/sondages', methods=['GET'])
+#Recupérer les quizz
+@app.route('/api/quizz', methods=['GET'])
 def get_sondages():
 	username=current_user.username
 	sondages = Sondage.query.filter(Sondage.username==username).all()
-	return jsonify({'sondages': [ s.to_json() for s in sondages ]})
+	return jsonify({'quizz': [ s.to_json() for s in sondages ]})
 
 #Lecture d'un sondage pour un id
-@app.route('/api/sondages/<int:id>', methods=['GET'])
+@app.route('/api/quizz/<int:id>', methods=['GET'])
 def get_sondage(id):
     sondage = Sondage.query.get_or_404(id)
     return jsonify(sondage.to_json())
     
-@app.route('/api/sondages/<int:id>/questions', methods=['GET'])
+@app.route('/api/quizz/<int:id>/questions', methods=['GET'])
 def get_sondageQuestions(id):
 	quests = SimpleQuestion.query.filter(SimpleQuestion.sondage_id==id).all()
 	return jsonify({'questions': [ q.to_json() for q in quests ]})
@@ -113,7 +113,7 @@ def delete_question(id):
 	return jsonify({'result': True})
 
 #~route pour crée un sondage
-@app.route('/api/sondages', methods=['POST'])
+@app.route('/api/quizz', methods=['POST'])
 def create_sondage():
 	if not request.json or not 'name' in request.json:
 		abort(400)
@@ -125,7 +125,7 @@ def create_sondage():
 	
 	
 #~ route pour supprimer un sondage	
-@app.route('/api/sondages/<int:id>', methods=['DELETE'])
+@app.route('/api/quizz/<int:id>', methods=['DELETE'])
 def delete_sondage(id):
 	sondages = Sondage.query.all()
 	sond = list(filter(lambda t : t.id == id, sondages))

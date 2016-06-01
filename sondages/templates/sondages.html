@@ -4,6 +4,7 @@
 <script>
 //Gestion des click
 $().ready(function(){
+  $("#main").hide();
   $("#sondageRefresh").on("click", refreshSondagesList);
 	$("#question #add").on("click",newQuestion);
 	$("#question #delete").on("click", delQuestion);
@@ -12,6 +13,9 @@ $().ready(function(){
 	$("#add").hide();
 	$("#delete").hide();
 	$("#text_currentSondage").empty();
+  $("#hideAdmin").on("click", function () {
+    $("#main").toggle();
+  });
 });
 
 //===============================================================Sondages======================================================================
@@ -56,7 +60,7 @@ function saveNewSondage(){
 	var sond = new Sondage($("#sondages #newSond #nameNewSond").val());
 	console.log("Creation of new sondage object\n"+JSON.stringify(sond));
 	$.ajax({
-		url : "http://localhost:5000/api/sondages",
+		url : "http://localhost:5000/api/quizz",
 		type: "POST",
 		contentType: "application/json",
 		data: JSON.stringify(sond),
@@ -90,7 +94,7 @@ function delSondage(event){
 //On recupere et affiche les sondages
 function refreshSondagesList(event){
   $.ajax({
-    url : "http://localhost:5000/api/sondages",
+    url : "http://localhost:5000/api/quizz",
     type : "GET",
     datatype: "json",
     success: function(data){
@@ -126,7 +130,7 @@ function SimpleQuestion(title, first, second, third, fourth, answer, sond_id){
 
 function refreshQuestionsList(event){
   $.ajax({
-    url : "http://localhost:5000/api/sondages/"+$("#val_currentSondage").val()+"/questions",
+    url : "http://localhost:5000/api/quizz/"+$("#val_currentSondage").val()+"/questions",
     type : "GET",
     datatype: "json",
     success: function(data){
