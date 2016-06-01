@@ -146,13 +146,15 @@ function refreshQuestionsList(event){
   });
 }
 
-var nbReponses = 0;
 
 //Affiche le formulaire pour une nouvelle question
 function newQuestion(){
+  nbReponses = 0;
+  $("#delete").hide();
+  $("#questions_form").empty();
+  $("#questions_actions").empty();
 	console.log("New question");
 	current = $("#questions_form");
-	current.empty();
   nbReponses++;
 	current.append($("<span>Question <br><textarea type='text' id='titre'></textarea><br></span>"))
 			.append($("<span data-id='" + nbReponses + "'>Réponse " + nbReponses + "<br><input type='text' class='repInput'><br></span>"));
@@ -212,8 +214,8 @@ function saveNewQuestion(){
         datatype: "json",
     });
     $("#questions_form").empty();
+    $("#questions_actions").empty();
     $("#delete").hide();
-    $("#add").hide();
 	refreshQuestionsList();
 }
 
@@ -223,8 +225,11 @@ function saveNewQuestion(){
 function formQuestion(event){
 	$("#delete").show();
 	$("#add").show();
+  nbReponses = 2;
 	current = $("#questions_form");
   buttons = $("#questions_actions");
+  current.empty();
+  buttons.empty();
   buttons.append($("<select name='reponse'><option value='1'>Réponse 1</option><option value='2'>Réponse 2</option></select><br>"))
 	console.log(event.data);
 	var title = event.data['title'];
@@ -236,18 +241,18 @@ function formQuestion(event){
   var fourth = event.data['fourthAlternative'];
 	var url = event.data['url'];
 	current.empty();
-	current.append($("<span>Texte de la Question :<br> <input type='text' value='' id='titre'><br></span>"))
-	.append($("<span>Première alternative : <br><input type='text' value='' id='firstA'><br></span>"))
-			.append($("<span>Seconde alternative : <br><input type='text' value='' id='secondA'><br></span>"))
+	current.append($("<span>Question :<br> <input type='text' value='' id='titre'><br></span>"))
+	.append($("<span> Réponse 1 : <br><input type='text' value='' id='firstA'><br></span>"))
+			.append($("<span> Réponse 2 : <br><input type='text' value='' id='secondA'><br></span>"))
   if (third){
-    current.append("<span>Troisième alternative : <br><input type='text' value='' id='thirdA'><br></span>")
-    $("thirdA").val(third);
+    current.append("<span> Réponse 3 : <br><input type='text' value='"+ third +"' id='thirdA'><br></span>");
+    $("#questions_actions select[name='reponse']").append("<option data-id='3' value='3'>Réponse 3</option>");
+    nbReponses++;
   }
   if (fourth){
-    current.append("<span>Quatrième alternative : <br><input type='text' value='' id='fourhtA'><br></span>")
-    $("fourthA").val(fourth);
-  } else {
-
+    current.append("<span><Réponse 4 : <br><input type='text' value='"+fourth+"' id='fourhtA'><br></span>");
+    $("#questions_actions select[name='reponse']").append("<option data-id='4' value='4'>Réponse 4</option>");
+    nbReponses++;
   }
   
 	current.append($("<span><input type='hidden' value='' id='url' /><br></span>"));
@@ -256,7 +261,7 @@ function formQuestion(event){
 	$("#secondA").val(second);
 	$("#url").val(url);
  
-      .append($("<span><input type='button' class='btn btn-default' value='Ajouter une réponse' id='addQuestion'><br></span>")
+  buttons.append($("<span><input type='button' class='btn btn-default' value='Ajouter une réponse' id='addQuestion'><br></span>")
       .on("click", addNewAnswer))
       .append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveQuestion'><br></span>")
       .on("click",saveNewQuestion));
@@ -282,8 +287,8 @@ function saveEditQuestion(event){
 		success:function (msg){
 			console.log('success update');
 			$("#questions_form").empty();
+      $("#questions_actions").empty();
 			$("#delete").hide();
-			$("#add").hide();
 			refreshQuestionsList();
 		},
 		error:function (err){
@@ -302,8 +307,8 @@ function delQuestion(){
       success: function (msg){
         console.log('Delete Success');
         $("#delete").hide();
-        $("#add").hide();
         $("#questions_form").empty();
+        $("#questions_actions").empty();
         refreshQuestionsList();
       },
       error: function (err){
