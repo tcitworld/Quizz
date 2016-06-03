@@ -100,14 +100,14 @@ function refreshSondagesList(event){
     success: function(data){
       $("#sondages").empty();
       $("#sondages").append($("<ul>"));
-      for(var i=0; i<data.sondages.length; i++){
-        console.log(data.sondages[i]);
+      for(var i=0; i<data.quizz.length; i++){
+        console.log(data.quizz[i]);
         $("#sondages ul").append($("<li>")
         .append($("<span>")
-        .append($("<a>").text(data.sondages[i].name))
-        .on("click", data.sondages[i], switchSond))
+        .append($("<a>").text(data.quizz[i].name))
+        .on("click", data.quizz[i], switchSond))
         .append($("<span id='delete' class='glyphicon glyphicon-remove icones' style='margin-left:5px;' aria-hidden='true'></span>")
-        .on("click", data.sondages[i], delSondage)));
+        .on("click", data.quizz[i], delSondage)));
       }
     },
     error: function(req, status, err){

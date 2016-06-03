@@ -4,10 +4,15 @@
 }
 
 body {
-   font: 30px Incosolata, Zapf Chancery, cursive;
-   background: CornSilk;
-   background-size:cover;
-  }
+ font: 30px Incosolata, Zapf Chancery, cursive;
+ background: CornSilk;
+ background-size:cover;
+ min-height: 100vh;
+}
+
+html {
+  height: 100vh;
+}
 
 a{
 	color:#E6E6FA;
