@@ -16,8 +16,8 @@
     "url": "https://github.com/tcitworld/Quizz/issues"
   },
   "dependencies": {
+    "animate.css-js": "0.0.9",
     "babel": "^6.5.2",
-    "babel-cli": "^6.9.0",
     "babel-plugin-transform-react-display-name": "^6.8.0",
     "babel-plugin-transform-react-jsx": "^6.8.0",
     "browserify": "^13.0.1",
@@ -30,9 +30,22 @@
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
+    "babel-eslint": "^6.0.4",
     "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babelify": "^7.3.0",
+    "envify": "^3.4.0",
     "eslint": "^2.11.1",
     "eslint-config-airbnb": "^9.0.1",
-    "eslint-plugin-react": "^5.1.1"
+    "eslint-plugin-react": "^5.1.1",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^2.0.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-util": "^3.0.7",
+    "postcss-cli": "^2.5.2",
+    "reactify": "^1.1.1",
+    "stylefmt": "^3.4.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
   }
 }

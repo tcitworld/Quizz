@@ -1,6 +1,6 @@
 let React = require('react');
+let animateCss = require('animate.css-js');
 const ReactDOM = require('react-dom');
-// let marked = require('marked');
 const $ = require('jquery');
 
 
@@ -29,9 +29,8 @@ class AnswerList extends React.Component {
 }
 
 class Question extends React.Component {
-
-  getInitialState() {
-    return {data: []};
+  state = {
+    data: [],
   }
   componentDidMount() {
     $.ajax({
@@ -93,18 +92,23 @@ class QuizzList extends React.Component {
   }
 }
 
-
-// tutorial4.js
 class Quizz extends React.Component {
+  handleQuizzClick(e) {
+    console.log(e.target);
+    e.target.style.transform = "translateX(-20em)";
+    e.target.style.transition = "transform 2s;";
+    console.log($(e.target).siblings(".zoneQuestions"));
+    let zq = $(e.target).siblings(".zoneQuestions").eq(0);
+    zq.show();
+    zq.find('.question:not(:first-child)').hide();
+  }
+
   render() {
     return (
       <div className="quizz">
-        <h2 className="quizzName">
+        <h2 className="quizzName" onClick={this.handleQuizzClick} >
           {this.props.name}
         </h2>
-        <span className="quizzId">
-          {this.props.id}
-        </span>
         <div className="zoneQuestions">
           <QuestionList data={this.props.questions} />
         </div>
@@ -114,8 +118,8 @@ class Quizz extends React.Component {
 }
 
 class QuizzBox extends React.Component {
-  getInitialState() {
-    return {data: []};
+  state = {
+    data: [],
   }
   componentDidMount() {
     $.ajax({
