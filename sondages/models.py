@@ -76,8 +76,10 @@ class SimpleQuestion(Question):
         json_quest = super(SimpleQuestion, self).to_json()
         json_quest['firstAlternative'] = self.firstAlternative
         json_quest['secondAlternative'] = self.secondAlternative
-        json_quest['thirdAlternative'] = self.thirdAlternative
-        json_quest['fourthAlternative'] = self.fourthAlternative
+        if (self.thirdAlternative != ""):
+            json_quest['thirdAlternative'] = self.thirdAlternative
+            if (self.fourthAlternative != ""):
+                json_quest['fourthAlternative'] = self.fourthAlternative
         json_quest['answer'] = self.answer
         return json_quest
 

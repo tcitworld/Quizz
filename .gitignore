@@ -64,3 +64,7 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+node_modules/
+sondages/static/js/main.babel.js
+sondages/static/js/main.full.js
