@@ -48,6 +48,11 @@ function showCurrentSondage(name){
 //Formulaire de creation d'un sondage
 function newSondage(){
 	$("#newSond").remove();
+  $("#text_currentSondage").empty();
+      $("#questions_form").empty();
+      $("#questions_actions").empty();
+      $("#delete").hide();
+      $("#questions").empty();
 	$("#sondages").append($("<span id='newSond'></span>")
 					.append($("<input type='text' id='nameNewSond' placeholder='Nom du sondage'>"))
 					.append($("<input type='button' class='btn btn-default' value='Ajouter' id='saveSond'>")
@@ -68,6 +73,7 @@ function saveNewSondage(){
 	});
 	$("#newSond").remove();
 	refreshSondagesList();
+  
 }
 
 //Fonction pour supprimer un sondage
@@ -84,6 +90,12 @@ function delSondage(event){
       showCurrentSondage("");
       $("#add").hide();
       refreshSondagesList();
+      $("#text_currentSondage").empty();
+      $("#questions_form").empty();
+      $("#questions_actions").empty();
+      $("#delete").hide();
+      $("#add").hide();
+      $("#questions").empty();
     },
     error:function(){
       console.log("Error deleting sondage");
