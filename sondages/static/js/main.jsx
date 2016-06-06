@@ -22,19 +22,19 @@ class Question extends React.Component {
     });
   }
 
-  componentWillReceiveProps() {
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        this.setState({data: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this),
-    });
-  }
+  // componentWillReceiveProps() {
+  //   $.ajax({
+  //     url: this.props.url,
+  //     dataType: 'json',
+  //     cache: false,
+  //     success: function(data) {
+  //       this.setState({data: data});
+  //     }.bind(this),
+  //     error: function(xhr, status, err) {
+  //       console.error(this.props.url, status, err.toString());
+  //     }.bind(this),
+  //   });
+  // }
 
   onClickHandler(index, answer, questionId) {
     this.props.answerClick(index, answer, questionId);
@@ -65,9 +65,9 @@ class QuizzList extends React.Component {
   render() {
     let quizzNodes = this.props.data.map(function(quizz) {
       return (
-        <Quizz name={quizz.name} key={quizz.id} id={quizz.id} questions={quizz.questions} />
+        <Quizz name={quizz.name} key={quizz.id} id={quizz.id} questions={quizz.questions} changeTitle={this.props.changeTitle} />
       );
-    });
+    }, this);
     return (
       <div className="quizzList">
         {quizzNodes}
@@ -80,30 +80,35 @@ class Quizz extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { questionIndex: 0, quizzIndex: 0, questions: this.props.questions[0], score: 0 };
+    this.state = { 
+      questionIndex: 0,
+      quizzIndex: 0,
+      questions: this.props.questions[0],
+      score: 0,
+      ended: false };
     this.answerClick = this.answerClick.bind(this);
     this.handleQuizzClick = this.handleQuizzClick.bind(this);
   }
 
   answerClick(key, answer, questionId) {
-    console.log(answer);
-    console.log("Question id : " + questionId);
     $(".quizz").eq(this.state.quizzIndex).find(".question").eq(0).find(".answer").eq(answer - 1).css('background-color','green');
     $(".quizz").eq(this.state.quizzIndex).find(".question").eq(0).find(".answer").not(":eq(" + (answer - 1) + ")").css('background-color','red');
     
     if (key == answer - 1) {
       this.setState({score: this.state.score+1})
     }
-    console.log(this.state.score);
 
-    if (this.state.questionIndex < this.props.questions.length) {
+    if (this.state.questionIndex+1 < this.props.questions.length) {
       this.setState({questionIndex: this.state.questionIndex+1});
-      this.setState({questions: this.props.questions[this.state.questionIndex] })
+      this.setState({questions: this.props.questions[this.state.questionIndex+1] })
+    } else {
+      this.setState({ended:true})
     }
   }
 
   handleQuizzClick(e) {
     this.setState({quizzIndex: $('.quizz').index($(e.target).parent())});
+    this.props.changeTitle(this.props.name);
     e.target.style.transform = "translateX(-20em)";
     e.target.style.transition = "transform 2s;";
     $(e.target).siblings(".zoneQuestions").eq(0).show();
@@ -111,11 +116,23 @@ class Quizz extends React.Component {
   }
 
   render() {
-    return (
-      <div className="quizz">
-        <div className="score pull-right">
+
+    let score = "";
+    if (this.state.score > 0) {
+        score = (<div className="score pull-right">
           {this.state.score}
-        </div>
+        </div>);
+    }
+    let content;
+    if (this.state.ended) {
+      content = 
+      (<div className="quizz">
+        <div className="col-md-4 col-md-offset-4">Vous avez achevé le QCM. Votre score est de {this.state.score}</div>
+        </div>);
+    } else {
+      content = (
+      <div className="quizz">
+        {score}
         <h2 className="quizzName" onClick={this.handleQuizzClick} >
           {this.props.name}
         </h2>
@@ -126,13 +143,22 @@ class Quizz extends React.Component {
         </div>
       </div>
     );
+    }
+    return content;
   }
 }
 
 class QuizzBox extends React.Component {
-  state = {
-    data: [],
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      title: "Liste des Quizz",
+    },
+    this.changeTitle = this.changeTitle.bind(this);
   }
+
   componentDidMount() {
     $.ajax({
       url: this.props.url,
@@ -147,11 +173,15 @@ class QuizzBox extends React.Component {
     });
   }
 
+  changeTitle(nTitle) {
+    this.setState({title: nTitle});
+  }
+
   render() {
     return (
       <div className="quizzBox">
-        <h1>Liste des Quizz</h1>
-        <QuizzList data={this.state.data} />
+        <h1>{this.state.title}</h1>
+        <QuizzList data={this.state.data} changeTitle={() => this.changeTitle()} />
       </div>
     );
   }

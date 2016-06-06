@@ -2,7 +2,8 @@
     "extends": ["airbnb", "eslint:recommended", "plugin:react/recommended"],
     "installedESLint": true,
     "plugins": [
-        "react"
+        "react",
+        "html"
     ],
     "settings": {
       "react": {
