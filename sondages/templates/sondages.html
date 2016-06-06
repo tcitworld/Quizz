@@ -73,7 +73,7 @@ function saveNewSondage(){
 	});
 	$("#newSond").remove();
 	refreshSondagesList();
-  
+
 }
 
 //Fonction pour supprimer un sondage
@@ -257,16 +257,16 @@ function formQuestion(event){
   var fourth = event.data['fourthAlternative'];
 	var url = event.data['url'];
 	current.empty();
-	current.append($("<span>Question :<br> <input type='text' value='' id='titre'><br></span>"))
-	.append($("<span> Réponse 1 : <br><input type='text' value='' id='firstA'><br></span>"))
-			.append($("<span> Réponse 2 : <br><input type='text' value='' id='secondA'><br></span>"))
+	current.append($("<span>Question :<br> <textarea type='text' id='titre'></span>"))
+	.append($("<br><span> Réponse 1 : <br><input class='repInput' type='text' value='' id='firstA'><br></span>"))
+			.append($("<span> Réponse 2 : <br><input class='repInput' type='text' value='' id='secondA'><br></span>"))
   if (third){
-    current.append("<span> Réponse 3 : <br><input type='text' value='"+ third +"' id='thirdA'><br></span>");
+    current.append("<span> Réponse 3 : <br><input class='repInput' type='text' value='"+ third +"' id='thirdA'><br></span>");
     $("#questions_actions select[name='reponse']").append("<option data-id='3' value='3'>Réponse 3</option>");
     nbReponses++;
   }
   if (fourth){
-    current.append("<span><Réponse 4 : <br><input type='text' value='"+fourth+"' id='fourhtA'><br></span>");
+    current.append("<span><Réponse 4 : <br><input class='repInput' type='text' value='"+fourth+"' id='fourthA'><br></span>");
     $("#questions_actions select[name='reponse']").append("<option data-id='4' value='4'>Réponse 4</option>");
     nbReponses++;
   }
@@ -280,17 +280,21 @@ function formQuestion(event){
   buttons.append($("<span><input type='button' class='btn btn-default' value='Ajouter une réponse' id='addQuestion'><br></span>")
       .on("click", addNewAnswer))
       .append($("<span><input type='button' class='btn btn-default' value='Sauvegarder la question' id='saveQuestion'><br></span>")
-      .on("click",saveNewQuestion));
+      .on("click",saveEditQuestion));
 }
 
 //Fonction ajax pour editer une question
 function saveEditQuestion(event){
-	var question = new SimpleQuestion(
+  console.log($("#firstA").val());
+  console.log($("#secondA").val());
+  console.log($("#thirdA").val());
+  console.log($("#fourthA").val());
+	question = new SimpleQuestion(
 		$("#questions_form textarea").val(),
-      $("#questions_form .repInput").eq(0).val(),
-      $("#questions_form .repInput").eq(1).val(),
-      $("#questions_form .repInput").eq(2).val(),
-      $("#questions_form .repInput").eq(3).val(),
+      $("#firstA").val(),
+      $("#secondA").val(),
+      $("#thirdA").val(),
+      $("#fourthA").val(),
       $("#questions_actions select").val(),
       $("#val_currentSondage").val()
 	);
