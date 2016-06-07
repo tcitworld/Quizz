@@ -2,7 +2,7 @@ let React = require('react');
 let ReactCSSTransitionGroup = require('react-addons-css-transition-group');
 const ReactDOM = require('react-dom');
 let $ = require('jquery');
-let socketio = require('socket.io-client')("http//:localhost:5000/socket");
+let socketio = require('socket.io-client');
 
 class Question extends React.Component {
   constructor(props) {
@@ -194,7 +194,11 @@ ReactDOM.render(
   document.getElementById('exemple')
 );
 
+let socket = socketio.connect('http://' + document.domain + ':' + location.port + '/socket');
 
-socketio.on('test',function(socket){
+socket.emit("testCS", {data: 42});
+console.log('helo');
+
+socket.on('test',function(socket){
   console.log(socket);
 });

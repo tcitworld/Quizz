@@ -178,3 +178,7 @@ def login():
 def logout():
 	logout_user()
 	return redirect(url_for('home'))
+
+@socketio.on('testCS', namespace='/socket')
+def testmsg(message):
+	print("hello")
