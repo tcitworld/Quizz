@@ -13,10 +13,6 @@ class User(db.Model,UserMixin):
 class Sondage(db.Model):
     id   = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    username = db.Column(db.String(50), db.ForeignKey("user.username"))
-    user = db.relationship("User",
-    backref=db.backref("sondages", lazy="dynamic",
-        cascade="all, delete-orphan"))
 
     def __init__(self, name,username):
         self.name = name

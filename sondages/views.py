@@ -7,7 +7,7 @@ from flask.ext.login import login_user,current_user,logout_user,login_required
 from wtforms.validators import DataRequired
 from sqlalchemy.exc import IntegrityError
 from hashlib import sha256
-from flask_socketio import send,emit
+from flask_socketio import send,emit,join_room,leave_room
 
 
 #~ ============================================================Formulaires pour la connexion====================================================
@@ -40,8 +40,7 @@ def home():
 #Recupérer les quizz
 @app.route('/api/quizz', methods=['GET'])
 def get_sondages():
-	username=current_user.username
-	sondages = Sondage.query.filter(Sondage.username==username).all()
+	sondages = Sondage.query.all()
 	return jsonify({'quizz': [ s.to_json() for s in sondages ]})
 
 #Lecture d'un sondage pour un id
@@ -118,8 +117,7 @@ def delete_question(id):
 def create_sondage():
 	if not request.json or not 'name' in request.json:
 		abort(400)
-	username=current_user.username
-	sondage = Sondage(name=request.json['name'],username=username)
+	sondage = Sondage(name=request.json['name'])
 	db.session.add(sondage)
 	db.session.commit()
 	return jsonify(sondage.to_json()), 201
@@ -179,6 +177,23 @@ def logout():
 	logout_user()
 	return redirect(url_for('home'))
 
-@socketio.on('testCS', namespace='/socket')
-def testmsg(message):
-	print("hello")
+######################
+#    Socket space    #
+######################
+
+@socketio.on('join', namespace='/socket')
+def connexion_battle(message):
+	print(message)
+	room = message['room']
+	join_room(room)
+	emit('battle',{"username":current_user.username,"room":room},room=room)
+
+@socketio.on('prepareBattle',namespace='/socket')
+def attente(message):
+	print(message)
+	print(current_user)
+	room = message['room']
+	if message['username'] != current_user.username:
+		emit('start',{"room":room},room=room)
+	else:
+		emit('battle',{"username":current_user.username,"room":room},room=room)

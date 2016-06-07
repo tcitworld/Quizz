@@ -3,6 +3,7 @@ let ReactCSSTransitionGroup = require('react-addons-css-transition-group');
 const ReactDOM = require('react-dom');
 let $ = require('jquery');
 let socketio = require('socket.io-client');
+let socket = socketio.connect('http://' + document.domain + ':' + location.port + '/socket');
 
 class Question extends React.Component {
   constructor(props) {
@@ -85,6 +86,21 @@ class Quizz extends React.Component {
     this.answerClick = this.answerClick.bind(this);
     this.handleQuizzClick = this.handleQuizzClick.bind(this);
     this.nextQuestion = this.nextQuestion.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
+  }
+
+  componentDidMount(){
+    
+    socket.on("battle",function(msg){
+      console.log(msg);
+      socket.emit('prepareBattle',{"username":msg.username,"room":msg.room});
+    });
+
+    socket.on("start",function(msg){
+      console.log(msg);
+      this.setState({quizzIndex: msg.room});
+      this.props.changeTitle(this.props.name); 
+    }.bind(this));
   }
 
   answerClick(key, answer, questionId) {
@@ -104,17 +120,18 @@ class Quizz extends React.Component {
       this.setState({questions: this.props.questions[this.state.questionIndex+1] });
     } else {
       this.setState({ended:true});
+      socket.emit("finish",{"score":this.state.score})
     }
     $('.btnNext').hide();
   }
+    
+    // e.target.style.transform = "translateX(-20em)";
+    // e.target.style.transition = "transform 2s;";
+    // $(e.target).siblings(".zoneQuestions").eq(0).show();
+    // $('.quizzName').not($(e.target).parent()).hide();
 
   handleQuizzClick(e) {
-    this.setState({quizzIndex: $('.quizz').index($(e.target).parent())});
-    this.props.changeTitle(this.props.name);
-    e.target.style.transform = "translateX(-20em)";
-    e.target.style.transition = "transform 2s;";
-    $(e.target).siblings(".zoneQuestions").eq(0).show();
-    $('.quizzName').not($(e.target).parent()).hide();
+    socket.emit("join", {"room":$('.quizz').index($(e.target).parent())});
   }
 
   render() {
@@ -194,11 +211,5 @@ ReactDOM.render(
   document.getElementById('exemple')
 );
 
-let socket = socketio.connect('http://' + document.domain + ':' + location.port + '/socket');
 
-socket.emit("testCS", {data: 42});
-console.log('helo');
 
-socket.on('test',function(socket){
-  console.log(socket);
-});
