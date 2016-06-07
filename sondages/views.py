@@ -160,7 +160,7 @@ def signin():
 #~ route pour la connexion		
 @app.route("/login",methods=("GET","POST",))
 def login():
-	socketio.emit("Bonjour");
+	socketio.emit("test",{'data':42},namespace='/socket');
 	f=LoginForm()
 	if not f.is_submitted():
 		f.next.data=request.args.get("next")

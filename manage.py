@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
-from sondages import manager
+from sondages import manager, socketio, app
 
 if __name__ == '__main__':
-	manager.run()
-	socketio.run()
+	socketio.run(app)
