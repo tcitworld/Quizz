@@ -40,7 +40,7 @@ class Question extends React.Component {
     let self = this;
     let answerNodes = answerItems.map(function(item, index) {
       if (typeof item !== "undefined") {
-        return (<div key={index} className="col-md-4"><div className="answer" onClick={() => self.onClickHandler(index,self.state.data.answer, self.props.questionId)} key={index}>{item}</div></div>);
+        return (<div key={index} className="col-md-6"><div className="answer" onClick={() => self.onClickHandler(index,self.state.data.answer, self.props.questionId)} key={index}>{item}</div></div>);
       }
     });
 
@@ -50,7 +50,7 @@ class Question extends React.Component {
           {this.state.data.title}
         </h2>
         {answerNodes}
-        <button className="btn btn-default btnNext" onClick={this.nextQuestion}>Next</button>
+        <div><button className="btn btn-default btnNext center-block" onClick={this.nextQuestion}>Next</button></div>
       </div>
     );
   }
@@ -93,7 +93,7 @@ class Quizz extends React.Component {
     if (key == answer - 1) {
       this.setState({score: this.state.score+1});
     }
-    $('.btnNext').show();
+    $('.btnNext').css('display','block');
 
   }
 
