@@ -2,6 +2,7 @@ let React = require('react');
 let ReactCSSTransitionGroup = require('react-addons-css-transition-group');
 const ReactDOM = require('react-dom');
 let $ = require('jquery');
+let socketio = require('socket.io')();
 
 class Question extends React.Component {
   constructor(props) {
@@ -192,3 +193,9 @@ ReactDOM.render(
   <QuizzBox url="http://localhost:5000/api/quizz" />,
   document.getElementById('exemple')
 );
+
+
+socketio.on('connection',function(socket){
+  console.log(socket);
+});
+socketio.listen(5000);

@@ -1,4 +1,4 @@
-from .app import app, db
+from .app import app, db, socketio
 from flask import render_template, request, jsonify, abort,url_for,redirect
 from .models import Question, Sondage, SimpleQuestion,User
 from flask.ext.wtf import Form,RecaptchaField
@@ -7,6 +7,7 @@ from flask.ext.login import login_user,current_user,logout_user,login_required
 from wtforms.validators import DataRequired
 from sqlalchemy.exc import IntegrityError
 from hashlib import sha256
+from flask_socketio import send,emit
 
 
 #~ ============================================================Formulaires pour la connexion====================================================
@@ -159,6 +160,7 @@ def signin():
 #~ route pour la connexion		
 @app.route("/login",methods=("GET","POST",))
 def login():
+	socketio.emit("Bonjour");
 	f=LoginForm()
 	if not f.is_submitted():
 		f.next.data=request.args.get("next")

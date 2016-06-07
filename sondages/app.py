@@ -28,3 +28,6 @@ app.config['SECRET_KEY'] = "3bf12ff9-bfee-47ed-bd34-c565ce775c7f"
 from flask.ext.login import LoginManager
 login_manager = LoginManager(app)
 login_manager.login_view="login"
+
+from flask_socketio import SocketIO
+socketio = SocketIO(app)

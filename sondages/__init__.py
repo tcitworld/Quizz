@@ -1,4 +1,4 @@
-from .app import app, manager, db
+from .app import app, manager, db, socketio
 import sondages.views
 import sondages.commands
 
