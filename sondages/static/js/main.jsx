@@ -4,8 +4,12 @@ const ReactDOM = require('react-dom');
 let $ = require('jquery');
 
 class Question extends React.Component {
-  state = {
-    data: [],
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+    }
+    this.nextQuestion = this.nextQuestion.bind(this);
   }
 
   componentDidMount() {
@@ -22,22 +26,12 @@ class Question extends React.Component {
     });
   }
 
-  // componentWillReceiveProps() {
-  //   $.ajax({
-  //     url: this.props.url,
-  //     dataType: 'json',
-  //     cache: false,
-  //     success: function(data) {
-  //       this.setState({data: data});
-  //     }.bind(this),
-  //     error: function(xhr, status, err) {
-  //       console.error(this.props.url, status, err.toString());
-  //     }.bind(this),
-  //   });
-  // }
-
   onClickHandler(index, answer, questionId) {
     this.props.answerClick(index, answer, questionId);
+  }
+
+  nextQuestion() {
+    this.props.nextQuestion(this.props.questionId);
   }
 
   render() {
@@ -56,6 +50,7 @@ class Question extends React.Component {
           {this.state.data.title}
         </h2>
         {answerNodes}
+        <button className="btn btn-default btnNext" onClick={this.nextQuestion}>Next</button>
       </div>
     );
   }
@@ -88,6 +83,7 @@ class Quizz extends React.Component {
       ended: false };
     this.answerClick = this.answerClick.bind(this);
     this.handleQuizzClick = this.handleQuizzClick.bind(this);
+    this.nextQuestion = this.nextQuestion.bind(this);
   }
 
   answerClick(key, answer, questionId) {
@@ -95,15 +91,20 @@ class Quizz extends React.Component {
     $(".quizz").eq(this.state.quizzIndex).find(".question").eq(0).find(".answer").not(":eq(" + (answer - 1) + ")").css('background-color','red');
     
     if (key == answer - 1) {
-      this.setState({score: this.state.score+1})
+      this.setState({score: this.state.score+1});
     }
+    $('.btnNext').show();
 
+  }
+
+  nextQuestion(questionId) {
     if (this.state.questionIndex+1 < this.props.questions.length) {
       this.setState({questionIndex: this.state.questionIndex+1});
-      this.setState({questions: this.props.questions[this.state.questionIndex+1] })
+      this.setState({questions: this.props.questions[this.state.questionIndex+1] });
     } else {
-      this.setState({ended:true})
+      this.setState({ended:true});
     }
+    $('.btnNext').hide();
   }
 
   handleQuizzClick(e) {
@@ -128,20 +129,20 @@ class Quizz extends React.Component {
       content = 
       (<div className="quizz">
         <div className="col-md-4 col-md-offset-4">Vous avez achevé le QCM. Votre score est de {this.state.score}</div>
-        </div>);
+      </div>);
     } else {
       content = (
-      <div className="quizz">
-        {score}
-        <h2 className="quizzName" onClick={this.handleQuizzClick} >
-          {this.props.name}
-        </h2>
-        <div className="zoneQuestions">
-          <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
-            <Question url={this.state.questions} answerClick={this.answerClick} questionId={this.state.questionIndex} key={this.state.questionIndex} />
-          </ReactCSSTransitionGroup>
+        <div className="quizz">
+          {score}
+          <h2 className="quizzName" onClick={this.handleQuizzClick} >
+            {this.props.name}
+          </h2>
+          <div className="zoneQuestions">
+            <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+              <Question url={this.state.questions} answerClick={this.answerClick} questionId={this.state.questionIndex} key={this.state.questionIndex} nextQuestion={this.nextQuestion} />
+            </ReactCSSTransitionGroup>
+          </div>
         </div>
-      </div>
     );
     }
     return content;
