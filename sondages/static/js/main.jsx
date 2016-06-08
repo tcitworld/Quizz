@@ -95,9 +95,9 @@ class Quizz extends React.Component {
       console.log("En attente d'un autre joueur");
     });
 
-    socket.on("attentereponse",function(msg){
-      console.log("En attente de la reponse d'un joueur");
-    });
+    socket.on("score",function(msg){
+      console.log(msg.score);
+    })
 
     socket.on("start",function(msg){
       console.log(msg);
@@ -129,7 +129,7 @@ class Quizz extends React.Component {
       this.setState({questions: this.props.questions[this.state.questionIndex+1] });
     } else {
       this.setState({ended:true});
-      socket.emit("finish",{"score":this.state.score})
+      socket.emit("finish",{"score":this.state.score,'room':this.state.quizzIndex})
     }
     $('.btnNext').hide();
   }

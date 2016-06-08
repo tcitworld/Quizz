@@ -187,7 +187,7 @@ rooms = {0:{},1:{},2:{},3:{}}
 def connexion_battle(message):
 	room = message['room']
 	join_room(room)
-	rooms[room][current_user.username] = 0
+	rooms[room][current_user.username] = [0,-1]
 	print(rooms)
 	if len(rooms[room]) > 1:
 		emit('start',{"room":room},room=room)
@@ -204,12 +204,23 @@ def leave_room(message):
 @socketio.on('testreponse',namespace='/socket')
 def test_suivant(message):
 	room = message['room']
-	rooms[room][current_user.username]+=1;
+	rooms[room][current_user.username][0]+=1;
 	print(rooms)
 	ok = True
 	for user in rooms[room]:
-		ok = ok and rooms[room][user] == rooms[room][current_user.username]
+		ok = ok and rooms[room][user][0] == rooms[room][current_user.username][0]
 	if ok:
 		emit('continuer',{"room":room},room=room)
 	else:
-		emit('attentereponse',{"room":room},room=room)
+		emit('attente',{"room":room},room=room)
+
+@socketio.on("finish",namespace='/socket')
+def finish_quizz(msg):
+	room = msg['room']
+	def getScore(user):
+		return rooms[room][user][1]
+	if min(rooms[room],key=getScore) == -1:
+		emit("attente",{"room":room},room=room)
+	else:
+		emit("score",{"room":room,"score":rooms[room]},room=room)
+
