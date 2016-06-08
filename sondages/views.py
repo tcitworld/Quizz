@@ -180,20 +180,23 @@ def logout():
 ######################
 #    Socket space    #
 ######################
+rooms = {0:set(),1:set(),2:set(),3:set()} 
+# Il faudrait creer une room par sondage.
 
 @socketio.on('join', namespace='/socket')
 def connexion_battle(message):
-	print(message)
 	room = message['room']
 	join_room(room)
-	emit('battle',{"username":current_user.username,"room":room},room=room)
-
-@socketio.on('prepareBattle',namespace='/socket')
-def attente(message):
-	print(message)
-	print(current_user)
-	room = message['room']
-	if message['username'] != current_user.username:
+	rooms[room].add(current_user.username)
+	print(rooms)
+	if len(rooms[room]) > 1:
 		emit('start',{"room":room},room=room)
 	else:
-		emit('battle',{"username":current_user.username,"room":room},room=room)
+		emit('attente',{"username":current_user.username,"room":room},room=room)
+
+@socketio.on('leave',namespace='/socket')
+def leave_room(message):
+	room = message['room']
+	leave_room(room)
+	rooms[room].remove(current_user.username)
+	emit('leave',{"username":current_user.username,"room":room},room=room)

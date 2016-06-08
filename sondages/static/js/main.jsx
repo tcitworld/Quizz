@@ -91,15 +91,16 @@ class Quizz extends React.Component {
 
   componentDidMount(){
     
-    socket.on("battle",function(msg){
+    socket.on("attente",function(msg){
       console.log(msg);
-      socket.emit('prepareBattle',{"username":msg.username,"room":msg.room});
     });
 
     socket.on("start",function(msg){
       console.log(msg);
       this.setState({quizzIndex: msg.room});
-      this.props.changeTitle(this.props.name); 
+      this.props.changeTitle(this.props.name);
+      $('.quizz').eq(msg.room).find(".zoneQuestions").show();
+      $('.quizzName').not($('.quizzName').eq(msg.room)).hide();
     }.bind(this));
   }
 
@@ -125,10 +126,6 @@ class Quizz extends React.Component {
     $('.btnNext').hide();
   }
     
-    // e.target.style.transform = "translateX(-20em)";
-    // e.target.style.transition = "transform 2s;";
-    // $(e.target).siblings(".zoneQuestions").eq(0).show();
-    // $('.quizzName').not($(e.target).parent()).hide();
 
   handleQuizzClick(e) {
     socket.emit("join", {"room":$('.quizz').index($(e.target).parent())});

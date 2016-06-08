@@ -26,9 +26,6 @@
   <body>
  <header>
  <h1>Quizz</h1>
- {% if current_user.is_authenticated %}
- <input id="battle" type="button" value="Battle" class="btn btn-default">
- {%endif%}
  <input type="hidden" id="val_currentSondage" ><span id="text_currentSondage"></span>
 
 {% if current_user.is_authenticated %}
