@@ -191,8 +191,14 @@ def connexion_battle(message):
 @socketio.on('readyC', namespace='/socket')
 def connexion_ready(message):
 	print(message)
-	print("");
+	print(" ");
 	emit('readyS', {"user1":message["mine"], "user2":message["theirs"], "room": message["room"]}, room=message["room"])
+
+@socketio.on('answer', namespace='/socket')
+def answerDeliver(message):
+	print(message)
+	print(" ")
+	emit('answerTransmitted', {"user": message["user"], "question": message["question"], "answer": message["answer"]})
 
 # @socketio.on('prepareBattle',namespace='/socket')
 # def attente(message):

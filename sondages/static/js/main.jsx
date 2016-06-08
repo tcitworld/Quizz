@@ -96,6 +96,7 @@ class Quizz extends React.Component {
       console.log("New player connected: "+msg.username);
       if (this.state.username == "") {
         this.state.username = msg.username;
+        console.log("En attente d'un second joueur");
       }
       else {
         if (this.state.username != msg.username) {
@@ -114,6 +115,13 @@ class Quizz extends React.Component {
       $('.quizzName:not(:eq(' + msg.room + '))').hide();
     }.bind(this));
 
+    socket.on("answerTransmitted", function(msg) {
+      console.log("Réponse transmise reçue");
+      if (msg.question == this.state.questionIndex) {
+        // right
+      }
+    }.bind(this));
+
     // socket.on("battle",function(msg){
     //   console.log(msg);
     //   socket.emit('prepareBattle',{"username":msg.username,"room":msg.room});
@@ -130,6 +138,8 @@ class Quizz extends React.Component {
     $(".quizz").eq(this.state.quizzIndex).find(".question").eq(0).find(".answer").eq(answer - 1).css('background-color','green');
     $(".quizz").eq(this.state.quizzIndex).find(".question").eq(0).find(".answer").not(":eq(" + (answer - 1) + ")").css('background-color','red');
     
+    socket.emit("answer", {"user": this.state.username, "question": questionId, "answer": answer});
+
     if (key == answer - 1) {
       this.setState({score: this.state.score+1});
     }
