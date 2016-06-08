@@ -92,7 +92,11 @@ class Quizz extends React.Component {
   componentDidMount(){
     
     socket.on("attente",function(msg){
-      console.log(msg);
+      console.log("En attente d'un autre joueur");
+    });
+
+    socket.on("attentereponse",function(msg){
+      console.log("En attente de la reponse d'un joueur");
     });
 
     socket.on("start",function(msg){
@@ -100,8 +104,11 @@ class Quizz extends React.Component {
       this.setState({quizzIndex: msg.room});
       this.props.changeTitle(this.props.name);
       $('.quizz').eq(msg.room).find(".zoneQuestions").show();
-      $('.quizzName').not($('.quizzName').eq(msg.room)).hide();
     }.bind(this));
+
+    socket.on("continuer",function(msg){
+      $('.btnNext').css('display','block');
+    })
   }
 
   answerClick(key, answer, questionId) {
@@ -111,7 +118,8 @@ class Quizz extends React.Component {
     if (key == answer - 1) {
       this.setState({score: this.state.score+1});
     }
-    $('.btnNext').css('display','block');
+    
+    socket.emit("testreponse",{"room":this.state.quizzIndex});
 
   }
 
@@ -128,6 +136,7 @@ class Quizz extends React.Component {
     
 
   handleQuizzClick(e) {
+    $('.quizzName').not($('.quizzName').eq($('.quizz').index($(e.target).parent()))).hide();
     socket.emit("join", {"room":$('.quizz').index($(e.target).parent())});
   }
 
