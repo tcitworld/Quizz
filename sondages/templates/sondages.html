@@ -32,7 +32,6 @@ function switchSond(event){
 	$("#add").show();
 	$("#currentquestion").empty();
 	$("#questions").empty();
-	console.log(event);
 	$("#val_currentSondage").val(event.data['id']);
 	refreshQuestionsList();
 	showCurrentSondage(event.data['name']);
@@ -69,17 +68,17 @@ function saveNewSondage(){
 		type: "POST",
 		contentType: "application/json",
 		data: JSON.stringify(sond),
-		datatype: "json"
+		datatype: "json",
+    success: function(data){
+      $("#newSond").remove();
+      refreshSondagesList();
+    }
 	});
-	$("#newSond").remove();
-	refreshSondagesList();
 
 }
 
 //Fonction pour supprimer un sondage
-function delSondage(event){
-  console.log("deleteSondage");
-  console.log(event.data['url']);
+function delSondage(event){;
   $.ajax({
     url: event.data.url,
     type: "DELETE",
@@ -113,7 +112,6 @@ function refreshSondagesList(event){
       $("#sondages").empty();
       $("#sondages").append($("<ul>"));
       for(var i=0; i<data.quizz.length; i++){
-        console.log(data.quizz[i]);
         $("#sondages ul").append($("<li>")
         .append($("<span>")
         .append($("<a>").text(data.quizz[i].name))
@@ -149,7 +147,6 @@ function refreshQuestionsList(event){
       $("#questions").empty();
       $("#questions").append($("<ul>"));
       for(var i=0; i<data.questions.length; i++){
-        console.log(data.questions[i]);
         $("#questions ul").append($("<li>")
         .append($("<a>")
         .text(data.questions[i].title))
@@ -169,7 +166,6 @@ function newQuestion(){
   $("#delete").hide();
   $("#questions_form").empty();
   $("#questions_actions").empty();
-	console.log("New question");
 	current = $("#questions_form");
   nbReponses++;
 	current.append($("<span>Question <br><textarea type='text' id='titre'></textarea><br></span>"))
@@ -228,11 +224,14 @@ function saveNewQuestion(){
         contentType : "application/json",
         data: JSON.stringify(question),
         datatype: "json",
+        success:function(data){
+          $("#questions_form").empty();
+          $("#questions_actions").empty();
+          $("#delete").hide();
+          refreshQuestionsList();
+        }
     });
-    $("#questions_form").empty();
-    $("#questions_actions").empty();
-    $("#delete").hide();
-	refreshQuestionsList();
+    
 }
 
 //Lorsqu'on clique sur une question,
@@ -246,31 +245,28 @@ function formQuestion(event){
   buttons = $("#questions_actions");
   current.empty();
   buttons.empty();
-  buttons.append($("<select name='reponse'><option value='1'>Réponse 1</option><option value='2'>Réponse 2</option></select><br>"))
-	console.log(event.data);
 	var title = event.data['title'];
-	console.log(event.data['firstAlternative']);
 	var first = event.data['firstAlternative'];
-	console.log(event.data['secondAlternative']);
 	var second = event.data['secondAlternative'];
   var third = event.data['thirdAlternative'];
   var fourth = event.data['fourthAlternative'];
 	var url = event.data['url'];
-	current.empty();
+  var reponse = event.data['answer'];
+   buttons.append($("<select name='reponse'><option value='1'>"+first+"</option><option value='2'>"+second+"</option></select><br>"))
 	current.append($("<span>Question :<br> <textarea type='text' id='titre'></span>"))
 	.append($("<br><span> Réponse 1 : <br><input class='repInput' type='text' value='' id='firstA'><br></span>"))
 			.append($("<span> Réponse 2 : <br><input class='repInput' type='text' value='' id='secondA'><br></span>"))
   if (third){
     current.append("<span> Réponse 3 : <br><input class='repInput' type='text' value='"+ third +"' id='thirdA'><br></span>");
-    $("#questions_actions select[name='reponse']").append("<option data-id='3' value='3'>Réponse 3</option>");
+    $("#questions_actions select[name='reponse']").append("<option data-id='3' value='3'>"+third+"</option>");
     nbReponses++;
   }
   if (fourth){
     current.append("<span><Réponse 4 : <br><input class='repInput' type='text' value='"+fourth+"' id='fourthA'><br></span>");
-    $("#questions_actions select[name='reponse']").append("<option data-id='4' value='4'>Réponse 4</option>");
+    $("#questions_actions select[name='reponse']").append("<option data-id='4' value='4'>"+fourth+"</option>");
     nbReponses++;
   }
-  
+  $("#questions_actions select[name='reponse']").val(reponse);
 	current.append($("<span><input type='hidden' value='' id='url' /><br></span>"));
 	$("#titre").val(title);
 	$("#firstA").val(first);
@@ -285,10 +281,6 @@ function formQuestion(event){
 
 //Fonction ajax pour editer une question
 function saveEditQuestion(event){
-  console.log($("#firstA").val());
-  console.log($("#secondA").val());
-  console.log($("#thirdA").val());
-  console.log($("#fourthA").val());
 	question = new SimpleQuestion(
 		$("#questions_form textarea").val(),
       $("#firstA").val(),

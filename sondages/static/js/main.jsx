@@ -5,6 +5,8 @@ let $ = require('jquery');
 let socketio = require('socket.io-client');
 let socket = socketio.connect('http://' + document.domain + ':' + location.port + '/socket');
 
+socket.emit("infogroom",{"data":42});
+
 class Question extends React.Component {
   constructor(props) {
     super(props);
@@ -93,14 +95,15 @@ class Quizz extends React.Component {
     
     socket.on("attente",function(msg){
       console.log("En attente d'un autre joueur");
+      // TODO
     });
 
     socket.on("score",function(msg){
       console.log(msg.score);
+      // TODO
     })
 
     socket.on("start",function(msg){
-      console.log(msg);
       this.setState({quizzIndex: msg.room});
       this.props.changeTitle(this.props.name);
       $('.quizz').eq(msg.room).find(".zoneQuestions").show();
@@ -217,5 +220,7 @@ ReactDOM.render(
   document.getElementById('exemple')
 );
 
-
+socket.on("infogroom",function(msg){
+  // Ici afficher sur la page d'acceuilllllleeee :)
+})
 

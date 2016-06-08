@@ -15,19 +15,25 @@
         {
             "title": "Activité Montagne:",
             "firstAlternative":  "Vous allez à la montagne",
-            "secondAlternative": "Vous préférez la plaine"   
+            "secondAlternative": "Vous préférez la plaine",
+            "thirdAlternative": "Osef",
+            "fourthAlternative": null 
         },
 
         {
             "title": "Vous allez dormir toute la journée:",
             "firstAlternative":  "Oui",
-            "secondAlternative": "Non"     
+            "secondAlternative": "Non",
+            "thirdAlternative": "En quoi cela te regarde ?",
+            "fourthAlternative": null     
         },
 
         {
             "title": "Vous ferez du sport:",
             "firstAlternative":  "Très certainement",
-            "secondAlternative": "Surtout pas"    
+            "secondAlternative": "Surtout pas",
+            "thirdAlternative": "En quoi cela te regarde ?",
+            "fourthAlternative": null   
         }
     ]
 }

@@ -193,6 +193,7 @@ def connexion_battle(message):
 		emit('start',{"room":room},room=room)
 	else:
 		emit('attente',{"room":room},room=room)
+	emit("infogroom",{"rooms":rooms},broadcast = True)
 
 @socketio.on('leave',namespace='/socket')
 def leave_room(message):
@@ -200,6 +201,7 @@ def leave_room(message):
 	leave_room(room)
 	rooms[room].remove(current_user.username)
 	emit('leave',{"username":current_user.username,"room":room},room=room)
+	emit("infogroom",{"rooms":rooms},broadcast = True)
 
 @socketio.on('testreponse',namespace='/socket')
 def test_suivant(message):
@@ -217,10 +219,13 @@ def test_suivant(message):
 @socketio.on("finish",namespace='/socket')
 def finish_quizz(msg):
 	room = msg['room']
-	def getScore(user):
-		return rooms[room][user][1]
-	if min(rooms[room],key=getScore) == -1:
+	rooms[room][current_user.username][1] = msg['score']
+	if min([rooms[room][user][1] for user in rooms[room]]) < 0:
 		emit("attente",{"room":room},room=room)
 	else:
 		emit("score",{"room":room,"score":rooms[room]},room=room)
 
+
+@socketio.on("infogroom",namespace='/socket')
+def info_room(msg):
+	emit("infogroom",{"rooms":rooms})

@@ -14,9 +14,8 @@ class Sondage(db.Model):
     id   = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
 
-    def __init__(self, name,username):
+    def __init__(self, name):
         self.name = name
-        self.username=username
 	
     def __repr__(self):
         return "<Sondage (%d) %s>" % (self.id, self.name)
