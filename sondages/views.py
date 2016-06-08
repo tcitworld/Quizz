@@ -158,7 +158,6 @@ def signin():
 #~ route pour la connexion		
 @app.route("/login",methods=("GET","POST",))
 def login():
-	socketio.emit("test",{'data':42},namespace='/socket');
 	f=LoginForm()
 	if not f.is_submitted():
 		f.next.data=request.args.get("next")
@@ -186,14 +185,21 @@ def connexion_battle(message):
 	print(message)
 	room = message['room']
 	join_room(room)
-	emit('battle',{"username":current_user.username,"room":room},room=room)
+	emit('new_player',{"username":current_user.username,"room":room},room=room)
 
-@socketio.on('prepareBattle',namespace='/socket')
-def attente(message):
+
+@socketio.on('readyC', namespace='/socket')
+def connexion_ready(message):
 	print(message)
-	print(current_user)
-	room = message['room']
-	if message['username'] != current_user.username:
-		emit('start',{"room":room},room=room)
-	else:
-		emit('battle',{"username":current_user.username,"room":room},room=room)
+	print("");
+	emit('readyS', {"user1":message["mine"], "user2":message["theirs"], "room": message["room"]}, room=message["room"])
+
+# @socketio.on('prepareBattle',namespace='/socket')
+# def attente(message):
+# 	print(message)
+# 	print(current_user)
+# 	room = message['room']
+# 	if message['username'] != current_user.username:
+# 		emit('start',{"room":room},room=room)
+# 	else:
+# 		emit('battle',{"username":current_user.username,"room":room},room=room)

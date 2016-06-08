@@ -82,7 +82,8 @@ class Quizz extends React.Component {
       quizzIndex: 0,
       questions: this.props.questions[0],
       score: 0,
-      ended: false };
+      ended: false,
+      username: "" };
     this.answerClick = this.answerClick.bind(this);
     this.handleQuizzClick = this.handleQuizzClick.bind(this);
     this.nextQuestion = this.nextQuestion.bind(this);
@@ -91,16 +92,38 @@ class Quizz extends React.Component {
 
   componentDidMount(){
     
-    socket.on("battle",function(msg){
-      console.log(msg);
-      socket.emit('prepareBattle',{"username":msg.username,"room":msg.room});
-    });
-
-    socket.on("start",function(msg){
-      console.log(msg);
-      this.setState({quizzIndex: msg.room});
-      this.props.changeTitle(this.props.name); 
+    socket.on("new_player", function(msg) {
+      console.log("New player connected: "+msg.username);
+      if (this.state.username == "") {
+        this.state.username = msg.username;
+      }
+      else {
+        if (this.state.username != msg.username) {
+          console.log("ready");
+          socket.emit("readyC", {"mine": this.state.username, "theirs": msg.username, "room": msg.room});
+        }
+      }
     }.bind(this));
+
+    socket.on("readyS", function(msg) {
+      console.log(msg);
+      console.log("serveur prêt");
+      this.setState({quizzIndex: msg.room});
+      this.props.changeTitle(this.props.name);
+      $('.quizz').eq(msg.room).find('.zoneQuestions').show();
+      $('.quizzName:not(:eq(' + msg.room + '))').hide();
+    }.bind(this));
+
+    // socket.on("battle",function(msg){
+    //   console.log(msg);
+    //   socket.emit('prepareBattle',{"username":msg.username,"room":msg.room});
+    // });
+
+    // socket.on("start",function(msg){
+    //   console.log(msg);
+    //   this.setState({quizzIndex: msg.room});
+    //   this.props.changeTitle(this.props.name); 
+    // }.bind(this));
   }
 
   answerClick(key, answer, questionId) {
