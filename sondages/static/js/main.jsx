@@ -2,6 +2,7 @@ let React = require('react');
 let ReactCSSTransitionGroup = require('react-addons-css-transition-group');
 const ReactDOM = require('react-dom');
 let $ = require('jquery');
+let toastr = require('toastr');
 let socketio = require('socket.io-client');
 let socket = socketio.connect('http://' + document.domain + ':' + location.port + '/socket');
 
@@ -75,6 +76,26 @@ class QuizzList extends React.Component {
   }
 }
 
+let setInfoWaitingUsers = (function(msg) {
+    let executed = false;
+    return function (msg) {
+        if (!executed) {
+            executed = true;
+            toastr.info(msg);
+        }
+    };
+})();
+
+let setInfoEndGame = (function(msg) {
+    let executed = false;
+    return function (msg) {
+        if (!executed) {
+            executed = true;
+            toastr.info(msg);
+        }
+    };
+})();
+
 class Quizz extends React.Component {
 
   constructor(props) {
@@ -84,24 +105,33 @@ class Quizz extends React.Component {
       quizzIndex: 0,
       questions: this.props.questions[0],
       score: 0,
-      ended: false };
+      ended: false, };
+    this._infoWaitingUsers = 0;
     this.answerClick = this.answerClick.bind(this);
     this.handleQuizzClick = this.handleQuizzClick.bind(this);
     this.nextQuestion = this.nextQuestion.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
+    this.reinit = this.reinit.bind(this);
   }
 
   componentDidMount(){
     
     socket.on("attente",function(msg){
-      console.log("En attente d'un autre joueur");
-      // TODO
-    });
+        console.log("En attente d'un autre joueur");
+        console.log(msg);
+        setInfoWaitingUsers("En attente d'un autre joueur");
+    }.bind(this));
 
     socket.on("score",function(msg){
-      console.log(msg.score);
-      // TODO
-    })
+      console.log(msg);
+      let score;
+      for (var i = 0; i < Object.keys(msg.score).length; i++) {
+        score = Object.keys(msg.score)[0] + " : " +  msg.score[Object.keys(msg.score)[0]][0] + " et " + Object.keys(msg.score)[1] + " : " +  msg.score[Object.keys(msg.score)[1]][1];
+      }
+      console.log("Score de l'autre joueur : ");
+      console.log(score);
+      setInfoEndGame("Score : " + score);
+    });
 
     socket.on("start",function(msg){
       this.setState({quizzIndex: msg.room});
@@ -111,7 +141,7 @@ class Quizz extends React.Component {
 
     socket.on("continuer",function(msg){
       $('.btnNext').css('display','block');
-    })
+    });
   }
 
   answerClick(key, answer, questionId) {
@@ -143,6 +173,12 @@ class Quizz extends React.Component {
     socket.emit("join", {"room":$('.quizz').index($(e.target).parent())});
   }
 
+  reinit(){
+    console.log("Reinitialisation");
+    socket.emit("leave",{"room":this.state.quizzIndex});
+    this.setState({ended:true});
+  }
+
   render() {
 
     let score = "";
@@ -156,6 +192,7 @@ class Quizz extends React.Component {
       content = 
       (<div className="quizz">
         <div className="col-md-4 col-md-offset-4">Vous avez achevé le QCM. Votre score est de {this.state.score}</div>
+        <button onClick={this.reinit} className="btn btn-primary" >Retour au lobby</button>
       </div>);
     } else {
       content = (
@@ -223,4 +260,3 @@ ReactDOM.render(
 socket.on("infogroom",function(msg){
   // Ici afficher sur la page d'acceuilllllleeee :)
 })
-
