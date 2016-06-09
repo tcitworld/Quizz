@@ -198,9 +198,10 @@ def connexion_battle(message):
 @socketio.on('leave',namespace='/socket')
 def leave_room(message):
 	room = message['room']
-	leave_room(room)
-	rooms[room].remove(current_user.username)
-	emit('leave',{"username":current_user.username,"room":room},room=room)
+	del rooms[room][current_user.username]
+	print()
+	print(rooms)
+	print()
 	emit("infogroom",{"rooms":rooms},broadcast = True)
 
 @socketio.on('testreponse',namespace='/socket')

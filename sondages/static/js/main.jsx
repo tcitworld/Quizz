@@ -111,6 +111,7 @@ class Quizz extends React.Component {
     this.handleQuizzClick = this.handleQuizzClick.bind(this);
     this.nextQuestion = this.nextQuestion.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
+    this.reinit = this.reinit.bind(this);
   }
 
   componentDidMount(){
@@ -129,7 +130,7 @@ class Quizz extends React.Component {
       }
       console.log("Score de l'autre joueur : ");
       console.log(score);
-      setInfoEndGame("Score de l'autre joueur : " + score);
+      setInfoEndGame("Score : " + score);
     });
 
     socket.on("start",function(msg){
@@ -172,6 +173,12 @@ class Quizz extends React.Component {
     socket.emit("join", {"room":$('.quizz').index($(e.target).parent())});
   }
 
+  reinit(){
+    console.log("Reinitialisation");
+    socket.emit("leave",{"room":this.state.quizzIndex});
+    this.setState({ended:true});
+  }
+
   render() {
 
     let score = "";
@@ -185,6 +192,7 @@ class Quizz extends React.Component {
       content = 
       (<div className="quizz">
         <div className="col-md-4 col-md-offset-4">Vous avez achevé le QCM. Votre score est de {this.state.score}</div>
+        <button onClick={this.reinit} className="btn btn-primary" >Retour au lobby</button>
       </div>);
     } else {
       content = (
@@ -252,4 +260,3 @@ ReactDOM.render(
 socket.on("infogroom",function(msg){
   // Ici afficher sur la page d'acceuilllllleeee :)
 })
-
