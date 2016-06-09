@@ -214,14 +214,14 @@ def test_suivant(message):
 	if ok:
 		emit('continuer',{"room":room},room=room)
 	else:
-		emit('attente',{"room":room},room=room)
+		emit('attente-q',{"room":room},room=room)
 
 @socketio.on("finish",namespace='/socket')
 def finish_quizz(msg):
 	room = msg['room']
 	rooms[room][current_user.username][1] = msg['score']
 	if min([rooms[room][user][1] for user in rooms[room]]) < 0:
-		emit("attente",{"room":room},room=room)
+		emit("attente-fin",{"room":room},room=room)
 	else:
 		emit("score",{"room":room,"score":rooms[room]},room=room)
 
