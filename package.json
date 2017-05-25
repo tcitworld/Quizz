@@ -4,7 +4,9 @@
   "description": "A simple quizz application",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -28,8 +30,9 @@
     "react": "^15.1.0",
     "react-addons-css-transition-group": "^15.1.0",
     "react-dom": "^15.1.0",
-    "socket.io-client": "^1.4.6",
-    "toastr": "^2.1.2"
+    "socket.io-client": "^2.0.0",
+    "toastr": "^2.1.2",
+    "snyk": "^1.30.1"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
@@ -51,5 +54,6 @@
     "stylefmt": "^3.4.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
-  }
+  },
+  "snyk": true
 }
